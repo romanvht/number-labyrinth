@@ -15,6 +15,7 @@ class Game {
 
         this.canvas = document.getElementById('gameCanvas');
         this.context = this.canvas.getContext('2d');
+        this.canvasScale = window.devicePixelRatio || 1;
         this.initGameState();
 
         this.sound = new Sound(this);
@@ -35,10 +36,10 @@ class Game {
         this.isPaused = false;
         this.gridSize = 0;
     }
-
+    
     resizeCanvas() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.matchMedia("(orientation: landscape)").matches ? window.innerHeight * 0.7 : window.innerHeight;
+        this.canvas.width = window.innerWidth * this.canvasScale;
+        this.canvas.height = (window.matchMedia("(orientation: landscape)").matches ? window.innerHeight * 0.7 : window.innerHeight) * this.canvasScale;
     
         if (this.gridSize) {
             this.cellSize = Math.floor(Math.min(
@@ -48,7 +49,12 @@ class Game {
 
             this.draw();
         }
-    }   
+
+        if(this.canvasScale > 1){
+            this.canvas.style.transform = `scale(${1/this.canvasScale})`;
+            this.canvas.style.transformOrigin = 'center center';
+        }
+    }
     
     startLevel(levelNumber) {
         this.input.resetDrawingState();
@@ -210,6 +216,11 @@ class Game {
     }    
 
     cellAtPosition(x, y) {
+        if(this.canvasScale > 1){
+            x = x / (1 / this.canvasScale);
+            y = y / (1 / this.canvasScale);
+        }
+
         const levelData = this.levels[this.currentLevel - 1];
         const gridSize = levelData.size;
         const gridWidth = gridSize * this.cellSize;
@@ -223,6 +234,7 @@ class Game {
         if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize) {
             return this.grid[gridY][gridX];
         }
+
         return null;
     }
 
