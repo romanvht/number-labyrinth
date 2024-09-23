@@ -1,7 +1,5 @@
 class Sound {
-    constructor(game) {
-        this.game = game;
-
+    constructor() {
         this.context = new (window.AudioContext || window.webkitAudioContext)();
         this.sounds = {};
         this.gainNode = this.context.createGain();
@@ -42,7 +40,6 @@ class Sound {
     }
 
     playAmbient() {
-        if (!this.game.gameStart) return;
         if (this.muted || !this.sounds['ambient']) return;
         if (this.ambient) return;
 
@@ -55,7 +52,6 @@ class Sound {
     }
 
     stopAmbient() {
-        if (!this.game.gameStart) return;
         if (!this.muted || !this.sounds['ambient']) return;
         if (!this.ambient) return;
 

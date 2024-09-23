@@ -18,7 +18,7 @@ class Game {
         this.canvasScale = window.devicePixelRatio || 1;
         this.initGameState();
 
-        this.sound = new Sound(this);
+        this.sound = new Sound();
         this.input = new Input(this, this.sound);
         this.menu = new Menu(this, this.storage, this.sound);
     }
