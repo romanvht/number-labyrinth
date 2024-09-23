@@ -40,6 +40,8 @@ class Game {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.matchMedia("(orientation: landscape)").matches ? window.innerHeight * 0.7 : window.innerHeight;
     
+        this.context.scale(dpr, dpr);
+
         if (this.gridSize) {
             this.cellSize = Math.floor(Math.min(
                 (this.canvas.width - 40) / this.gridSize,
