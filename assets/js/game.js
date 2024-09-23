@@ -43,16 +43,16 @@ class Game {
     
         if (this.gridSize) {
             this.cellSize = Math.floor(Math.min(
-                (this.canvas.width - 40) / this.gridSize,
+                (this.canvas.width - 40 * this.canvasScale) / this.gridSize,
                 (this.canvas.height) / this.gridSize
             ));
 
             this.draw();
-        }
 
-        if(this.canvasScale > 1){
-            this.canvas.style.transform = `scale(${1/this.canvasScale})`;
-            this.canvas.style.transformOrigin = 'center center';
+            if(this.canvasScale > 1){
+                this.canvas.style.transform = `scale(${1/this.canvasScale})`;
+                this.canvas.style.transformOrigin = 'center center';
+            }
         }
     }
     
@@ -216,17 +216,17 @@ class Game {
     }    
 
     cellAtPosition(x, y) {
-        if(this.canvasScale > 1){
-            x = x / (1 / this.canvasScale);
-            y = y / (1 / this.canvasScale);
-        }
-
         const levelData = this.levels[this.currentLevel - 1];
         const gridSize = levelData.size;
         const gridWidth = gridSize * this.cellSize;
         const gridHeight = gridSize * this.cellSize;
         const offsetX = (this.canvas.width - gridWidth) / 2;
         const offsetY = (this.canvas.height - gridHeight) / 2;
+
+        if(this.canvasScale > 1){
+            x = x / (1 / this.canvasScale);
+            y = y / (1 / this.canvasScale);
+        }
 
         const gridX = Math.floor((x - offsetX) / this.cellSize);
         const gridY = Math.floor((y - offsetY) / this.cellSize);
