@@ -92,7 +92,6 @@ h1, h2 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding-top: 60px;
     width: 100%;
     height: 100vh;
 }
@@ -236,10 +235,6 @@ h1, h2 {
 }
 
 @media (orientation: landscape) {
-    #game-container {
-        padding-top: 0;
-    }
-
     #levels-list {
         grid-template-columns: repeat(10, auto);
     }
