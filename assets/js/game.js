@@ -2,6 +2,7 @@ class Game {
     constructor() {
         this.levelsData = new Levels();
         this.storage = new Storage();
+        this.sound = new Sound();
 
         this.colors = {
             block: '#e0e0e0',
@@ -18,7 +19,6 @@ class Game {
         this.canvasScale = window.devicePixelRatio || 1;
         this.initGameState();
 
-        this.sound = new Sound();
         this.input = new Input(this, this.sound);
         this.menu = new Menu(this, this.storage, this.sound);
     }
