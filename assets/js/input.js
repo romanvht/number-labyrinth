@@ -16,7 +16,7 @@ class Input {
         this.game.canvas.addEventListener('touchend', () => this.resetDrawingState());
 
         window.addEventListener('resize', () => this.game.resizeCanvas());
-        window.addEventListener("visibilitychange", this.sound.onFocus.bind(this.sound));
+        window.addEventListener("visibilitychange", () => this.sound.onFocus());
     }
 
     getPointerPosition(e) {
