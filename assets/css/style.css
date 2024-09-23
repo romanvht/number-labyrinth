@@ -88,7 +88,6 @@ h1, h2 {
 }
 
 #game-container {
-    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -158,19 +157,16 @@ h1, h2 {
     font-size: 16px;
 }
 
+#levels-menu {
+    max-height: 90vh;
+}
+
 #levels-list {
     display: grid;
     grid-template-columns: repeat(5, auto);
     justify-content: center;
     max-width: 700px;
-    max-height: 80%;
     overflow-y: auto;
-}
-
-@media (orientation: landscape) {
-    #levels-list {
-        grid-template-columns: repeat(10, auto);
-    }
 }
 
 .level-time {
@@ -236,5 +232,15 @@ h1, h2 {
         width: 40px;
         height: 40px;
         font-size: 14px;
+    }
+}
+
+@media (orientation: landscape) {
+    #game-container {
+        padding-top: 0;
+    }
+
+    #levels-list {
+        grid-template-columns: repeat(10, auto);
     }
 }
