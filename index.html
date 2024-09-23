@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Числовой лабиринт</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="overlay" class="overlay">
+        <div class="menu-container">
+            <div id="main-menu" class="menu">
+                <h1>Числовой лабиринт</h1>
+                <button id="start-button">Старт</button>
+                <button id="levels-button">Уровни</button>
+                <button id="sound-toggle">Звук: Вкл</button>
+            </div>
+            <div id="levels-menu" class="menu hidden">
+                <h2>Выбор уровня</h2>
+                <div id="levels-list"></div>
+                <button id="back-button">Назад</button>
+            </div>
+            <div id="level-complete-menu" class="menu hidden">
+                <h2>Уровень пройден!</h2>
+                <p class="level-time">Время: <span id="time-spent">0</span> сек.</p>
+                <button id="next-level-button">Дальше</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <div class="game-info">
+            <div id="level-container"></div>
+            <button id="open-menu-button">&#10074;&#10074;</button>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <script src="assets/js/levels.js"></script>
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/sound.js"></script>
+    <script src="assets/js/game.js"></script>
+    <script src="assets/js/input.js"></script>
+    <script src="assets/js/menu.js"></script>
+    <script>
+        const game = new Game();
+    </script>
+</body>
+</html>

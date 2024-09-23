@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конструктор уровней</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f9f9f9;
+            color: #333333;
+            text-align: center;
+        }
+        button {
+            background-color: #1976d2;
+            color: #ffffff;
+            padding: 8px 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+        }
+        input {
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            border: 1px solid rgba(51, 51, 51, .5);
+        }
+        canvas {
+            border: 1px solid black;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .controls {
+            margin-bottom: 10px;
+        }
+        #levelsList {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            max-width: 800px;
+            margin: auto;
+            margin-top: 10px;
+        }
+        #levelsList div{
+            padding: 5px;
+            cursor: pointer;
+        }
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <label for="levelNumber">Уровень:</label>
+        <input type="number" id="levelNumber" value="1" readonly>
+        <button id="saveLevel">Сохранить</button>
+        <button id="nextLevel">Следующий</button>
+        <button id="exportLevels">Выгрузить</button>
+        <button><label for="importFile" id="importLabel">Загрузить</label></button>
+        <input type="file" id="importFile" accept="application/json">
+    </div>
+
+    <div class="controls">
+        <label for="gridSize">Сетка:</label>
+        <button id="decreaseGridSize">-</button>
+        <input type="number" id="gridSize" value="3" readonly>
+        <button id="increaseGridSize">+</button>
+    </div>
+
+    <canvas id="levelCanvas" width="600" height="600"></canvas>
+
+    <div id="levelsList"></div>
+
+    <script>
+        let currentLevel = 1;
+        let gridSize = 3;
+        let grid = [];
+        let levels = [];
+
+        const canvas = document.getElementById('levelCanvas');
+        const ctx = canvas.getContext('2d');
+        const cellSize = 50;
+        const levelsList = document.getElementById('levelsList');
+
+        function initGrid() {
+            grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
+            drawGrid();
+        }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const cell = grid[y][x];
+                    ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                    if (cell && cell.type === 'number') {
+                        ctx.fillText(cell.value, x * cellSize + cellSize / 2, y * cellSize + cellSize / 2);
+                    } else if (cell && cell.type === 'block') {
+                        ctx.fillStyle = '#e0e0e0';
+                        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                        ctx.fillStyle = '#000';
+                    }
+                }
+            }
+        }
+
+        function saveLevel() {
+            const numbers = [];
+            const blocks = [];
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const cell = grid[y][x];
+                    if (cell) {
+                        if (cell.type === 'number') {
+                            numbers.push({ x, y, value: cell.value });
+                        } else if (cell.type === 'block') {
+                            blocks.push({ x, y });
+                        }
+                    }
+                }
+            }
+            const level = { size: gridSize, numbers, blocks };
+            levels[currentLevel - 1] = level;
+            addLevelToList(currentLevel);
+            console.log(`Level ${currentLevel} saved!`);
+        }
+
+        function addLevelToList(levelNumber) {
+            let listItem = document.getElementById(`level-${levelNumber}`);
+            if (!listItem) {
+                listItem = document.createElement('div');
+                listItem.id = `level-${levelNumber}`;
+                listItem.textContent = `Level ${levelNumber}`;
+                listItem.addEventListener('click', () => loadLevel(levelNumber));
+                levelsList.appendChild(listItem);
+            }
+        }
+
+        function loadLevel(levelNumber) {
+            currentLevel = levelNumber;
+            document.getElementById('levelNumber').value = currentLevel;
+            
+            if (levels[levelNumber - 1]) {
+                const level = levels[levelNumber - 1];
+                gridSize = level.size;
+                document.getElementById('gridSize').value = gridSize;
+                grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
+
+                level.numbers.forEach(num => {
+                    grid[num.y][num.x] = { type: 'number', value: num.value };
+                });
+                level.blocks.forEach(block => {
+                    grid[block.y][block.x] = { type: 'block' };
+                });
+
+                drawGrid();
+            } else {
+                initGrid();
+            }
+        }
+
+        function handleLeftClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / cellSize);
+            const y = Math.floor((e.clientY - rect.top) / cellSize);
+
+            if (!grid[y][x]) {
+                const maxNumber = getMaxNumber();
+                grid[y][x] = { type: 'number', value: maxNumber + 1 };
+                drawGrid();
+            }
+        }
+
+        function getMaxNumber() {
+            let maxNumber = 0;
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const cell = grid[y][x];
+                    if (cell && cell.type === 'number') {
+                        maxNumber = Math.max(maxNumber, cell.value);
+                    }
+                }
+            }
+            return maxNumber;
+        }
+
+        function handleRightClick(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / cellSize);
+            const y = Math.floor((e.clientY - rect.top) / cellSize);
+
+            const cell = grid[y][x];
+            if (cell && cell.type === 'number') {
+                const removedNumber = cell.value; 
+                grid[y][x] = null; 
+                updateNumbersAfterRemoval(removedNumber);
+            } else if (!cell) {
+                grid[y][x] = { type: 'block' }; 
+            } else if (cell.type === 'block') {
+                grid[y][x] = null;
+            }
+            drawGrid();
+        }
+
+        function updateNumbersAfterRemoval(removedNumber) {
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const cell = grid[y][x];
+                    if (cell && cell.type === 'number' && cell.value > removedNumber) {
+                        cell.value--; 
+                    }
+                }
+            }
+        }
+
+        function exportLevels() {
+            const json = JSON.stringify(levels, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'levels.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importLevels(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const importedLevels = JSON.parse(e.target.result);
+                    levels = importedLevels;
+                    levelsList.innerHTML = '';
+                    levels.forEach((_, index) => addLevelToList(index + 1));
+                    console.log('Levels imported successfully!');
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function nextLevel() {
+            saveLevel();
+            currentLevel++;
+            document.getElementById('levelNumber').value = currentLevel;
+            initGrid();
+        }
+
+        function increaseGridSize() {
+            gridSize++;
+            document.getElementById('gridSize').value = gridSize;
+            initGrid();
+        }
+
+        function decreaseGridSize() {
+            if (gridSize > 2) {
+                gridSize--;
+                document.getElementById('gridSize').value = gridSize;
+                initGrid();
+            }
+        }
+
+        canvas.addEventListener('click', handleLeftClick);
+        canvas.addEventListener('contextmenu', handleRightClick);
+
+        document.getElementById('saveLevel').addEventListener('click', saveLevel);
+        document.getElementById('nextLevel').addEventListener('click', nextLevel);
+
+        document.getElementById('increaseGridSize').addEventListener('click', increaseGridSize);
+        document.getElementById('decreaseGridSize').addEventListener('click', decreaseGridSize);
+
+        document.getElementById('exportLevels').addEventListener('click', exportLevels);
+        document.getElementById('importFile').addEventListener('change', importLevels);
+
+        initGrid();
+    </script>
+</body>
+</html>
