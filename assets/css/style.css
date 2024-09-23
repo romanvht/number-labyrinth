@@ -9,7 +9,7 @@ body {
     font-family: 'Roboto', Arial, sans-serif;
     color: #333333;
     overflow: hidden;
-    height: 100vh;
+    height: calc(100vh - env(safe-area-inset-top, 0px));
 }
 
 .overlay {
@@ -158,7 +158,7 @@ h1, h2 {
 }
 
 #levels-menu {
-    max-height: 90vh;
+    max-height: calc(90vh - env(safe-area-inset-top, 0px));
 }
 
 #levels-list {
