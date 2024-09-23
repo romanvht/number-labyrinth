@@ -36,20 +36,6 @@ class Game {
         this.gridSize = 0;
     }
 
-    // resizeCanvas() {
-    //     this.canvas.width = window.innerWidth;
-    //     this.canvas.height = window.matchMedia("(orientation: landscape)").matches ? window.innerHeight * 0.7 : window.innerHeight;
-    
-    //     if (this.gridSize) {
-    //         this.cellSize = Math.floor(Math.min(
-    //             (this.canvas.width - 40) / this.gridSize,
-    //             (this.canvas.height) / this.gridSize
-    //         ));
-
-    //         this.draw();
-    //     }
-    // }   
-
     resizeCanvas() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.matchMedia("(orientation: landscape)").matches ? window.innerHeight * 0.7 : window.innerHeight;
@@ -59,12 +45,10 @@ class Game {
                 (this.canvas.width - 40) / this.gridSize,
                 (this.canvas.height) / this.gridSize
             ));
-    
-            this.context.scale(10, 10);
+
             this.draw();
-            this.context.scale(0.1, 0.1);
         }
-    }
+    }   
     
     startLevel(levelNumber) {
         this.input.resetDrawingState();
